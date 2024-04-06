@@ -73,29 +73,23 @@ class UserTest extends TestCase
         $this->sut->addScore($absoluteScore);
         $this->assertEquals($absoluteScore, $this->sut->getScore());
     }
+    
+    public function testAddRelativeScore(): void
+    {
+        $relativeScoreType = $this->createMock(ScoreType::class);
+        $relativeScoreType->expects(self::once())
+            ->method('getValue')
+            ->willReturn(ScoreType::RELATIVE_SCORE_TYPE);
 
-    /**
-     * TODO: REVISAR TEST DE ADD RELATIVE SCORE!!!!!!!!!!
-     *
-     * @return void
-     */
-    // public function testAddRelativeScore(): void
-    // {
-    //     $relativeScoreType = $this->createMock(ScoreType::class);
-    //     $relativeScoreType->expects(self::once())
-    //         ->method('getValue')
-    //         ->willReturn(ScoreType::RELATIVE_SCORE_TYPE);
+        $relativeScore = $this->createMock(RelativeScore::class);
+        $relativeScore->expects(self::once())
+            ->method('getType')
+            ->willReturn($relativeScoreType);
 
-    //     $relativeScore = $this->createMock(RelativeScore::class);
-    //     $relativeScore->expects(self::once())
-    //         ->method('getType')
-    //         ->willReturn($relativeScoreType);
+        $this->userScore->expects(self::once())
+            ->method('update')
+            ->with($relativeScore);
 
-    //     $this->userScore->expects(self::once())
-    //         ->method('update')
-    //         ->with($relativeScore);
-
-    //     $this->sut->addScore($relativeScore);
-    //     $this->assertEquals($relativeScore, $this->sut->getScore());
-    // }
+        $this->sut->addScore($relativeScore);
+    }
 }
