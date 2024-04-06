@@ -22,3 +22,26 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    #SERVICES
+
+    App\Application\User\GetUsers\GetUsersService:
+        arguments:
+            $repository: '@App\Infrastructure\User\Repositories\LocalRepository'
+
+
+    App\Application\User\AddUser\AddUserService:
+        arguments:
+            $repository: '@App\Infrastructure\User\Repositories\LocalRepository'
+
+    #CONTROLLERS
+
+    App\Infrastructure\User\AddUserController:
+        tags: ["controller.service_arguments"]
+        arguments:
+            $addUserService: '@App\Application\User\AddUser\AddUserService'
+
+    App\Infrastructure\User\GetUsersController:
+        tags: ["controller.service_arguments"]
+        arguments:
+            $getUsersService: '@App\Application\User\GetUsers\GetUsersService'

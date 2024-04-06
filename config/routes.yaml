@@ -1,3 +1,12 @@
 controllers:
     resource: ../src/Controller/
     type: attribute
+
+user_score:
+    path: '/user/{userId}/score'
+    controller: App\Infrastructure\User\AddUserController::add
+    methods: ['POST']
+
+get_users:
+    path: '/user/get_all'
+    controller: App\Infrastructure\User\GetUsersController::getUsers
