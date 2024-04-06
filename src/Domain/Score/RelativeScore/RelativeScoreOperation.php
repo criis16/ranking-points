@@ -6,8 +6,8 @@ use InvalidArgumentException;
 
 class RelativeScoreOperation
 {
-    public const ADD_OPERATION = 'add';
-    public const SUBSTRACT_OPERATION = 'substract';
+    public const ADD_OPERATION = '+';
+    public const SUBSTRACT_OPERATION = '-';
 
     private const ALLOWED_OPERATIONS = [
         self::ADD_OPERATION,
