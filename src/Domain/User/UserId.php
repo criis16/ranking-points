@@ -4,9 +4,9 @@ namespace App\Domain\User;
 
 class UserId
 {
-    private int $id;
+    private string $id;
 
-    public function __construct(int $id)
+    public function __construct(string $id)
     {
         $this->id = $id;
     }
@@ -14,9 +14,9 @@ class UserId
     /**
      * Return the user id value
      *
-     * @return integer
+     * @return string
      */
-    public function getValue(): int
+    public function getValue(): string
     {
         return $this->id;
     }
