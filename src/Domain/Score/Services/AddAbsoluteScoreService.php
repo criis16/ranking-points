@@ -12,8 +12,7 @@ class AddAbsoluteScoreService
         User $user,
         ScorePoints $scorePoints
     ): User {
-        $newUserScore = new AbsoluteScore($scorePoints);
-        $user->addScore($newUserScore);
+        $user->addScore(new AbsoluteScore($scorePoints));
 
         return $user;
     }
