@@ -10,3 +10,7 @@ user_score:
 get_users:
     path: '/user/get_all'
     controller: App\Infrastructure\User\GetUsersController::getUsers
+
+get_ranked_users:
+    path: '/ranking'
+    controller: App\Infrastructure\User\GetRankedUsersController::getRankedUsers
