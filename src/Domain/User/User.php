@@ -48,9 +48,10 @@ class User
     public function addScore(Score $score): void
     {
         $scoreTypeValue = $score->getType()->getValue();
-        if ($scoreTypeValue === ScoreType::ABSOLUTE_SCORE_TYPE) {
-            $this->userScore = $score;
-        } elseif ($scoreTypeValue === ScoreType::RELATIVE_SCORE_TYPE) {
+        if (
+            $scoreTypeValue === ScoreType::ABSOLUTE_SCORE_TYPE ||
+            $scoreTypeValue === ScoreType::RELATIVE_SCORE_TYPE
+        ) {
             $this->userScore->update($score);
         } else {
             throw new InvalidArgumentException('Score type not allowed: ' . $scoreTypeValue);

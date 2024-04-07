@@ -57,7 +57,7 @@ class AddUserController
         }
 
         if ($isSaved) {
-            $responseMessage = 'User score saved successfully';
+            $responseMessage = 'The user\'s score with id ' . $userId . ' has been successfully saved';
             $statusCode = 200;
         }
 

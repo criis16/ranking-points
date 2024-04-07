@@ -10,19 +10,25 @@ use App\Domain\Score\AbsoluteScore\AbsoluteScore;
 use App\Domain\Score\Services\AddRelativeScoreService;
 use App\Domain\User\Repositories\UserRepositoryInterface;
 use App\Domain\Score\RelativeScore\RelativeScoreOperation;
+use App\Domain\Score\Services\AddAbsoluteScoreService;
 use App\Infrastructure\User\Repositories\AddUserRequest;
 
 class AddUserService
 {
+    private const EMPTY_SCORE = 0;
+    
     private UserRepositoryInterface $repository;
     private AddRelativeScoreService $addRelativeScoreService;
+    private AddAbsoluteScoreService $addAbsoluteScoreService;
 
     public function __construct(
         UserRepositoryInterface $repository,
-        AddRelativeScoreService $addRelativeScoreService
+        AddRelativeScoreService $addRelativeScoreService,
+        AddAbsoluteScoreService $addAbsoluteScoreService
     ) {
         $this->repository = $repository;
         $this->addRelativeScoreService = $addRelativeScoreService;
+        $this->addAbsoluteScoreService = $addAbsoluteScoreService;
     }
 
     /**
@@ -38,26 +44,16 @@ class AddUserService
         $user = $this->checkUser($userId);
 
         if (!empty($user)) {
-            if (!empty($request->getTotalScore())) {
-                throw new InvalidArgumentException('Must be a relative score for an existing user, not absolute');
-            }
-
-            $user = $this->addRelativeScoreService->execute(
-                \reset($user),
-                new ScorePoints($request->getRelativeScore()),
-                RelativeScoreOperation::instance($request->getOperation())
-            );
+            $user = $this->updateUserScore($request, \reset($user));
         } else {
-            if (!empty($request->getRelativeScore())) {
-                throw new InvalidArgumentException('Must be an absolute score for a new user, not relative');
-            }
-
             $user = new User(
                 $userId,
                 new AbsoluteScore(
-                    new ScorePoints($request->getTotalScore())
+                    new ScorePoints(self::EMPTY_SCORE)
                 )
             );
+
+            $user = $this->updateUserScore($request, $user);
         }
 
         return $this->repository->saveUser($user);
@@ -66,5 +62,26 @@ class AddUserService
     private function checkUser(UserId $userId): array
     {
         return $this->repository->getUserById($userId);
+    }
+
+    private function updateUserScore(
+        AddUserRequest $request,
+        User $user
+    ): User {
+        $totalScore = $request->getTotalScore();
+        if (isset($totalScore)) {
+            $user = $this->addAbsoluteScoreService->execute(
+                $user,
+                new ScorePoints($totalScore)
+            );
+        } else {
+            $user = $this->addRelativeScoreService->execute(
+                $user,
+                new ScorePoints($request->getRelativeScore()),
+                RelativeScoreOperation::instance($request->getOperation())
+            );
+        }
+
+        return $user;
     }
 }

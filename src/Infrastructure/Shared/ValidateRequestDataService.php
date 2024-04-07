@@ -6,6 +6,7 @@ use App\Infrastructure\Shared\Exceptions\RequestException;
 
 class ValidateRequestDataService
 {
+    private const MAX_ALLOWED_PARAMS = 1;
     /**
      * Validates the request input data
      *
@@ -22,12 +23,18 @@ class ValidateRequestDataService
             throw new RequestException(['empty_body' => 'There is not request data.']);
         }
 
+        $totalParams = 0;
         $message = [];
 
         foreach ($request as $requestKey => $requestValue) {
             if (!\in_array($requestKey, $requiredFields) || empty($requestKey)) {
                 $message[$requestKey] = \ucfirst($requestKey) . ' is a required field';
             }
+            $totalParams++;
+        }
+
+        if ($totalParams > self::MAX_ALLOWED_PARAMS) {
+            $message['must_be_one'] = 'It must be only one parameter at the request data.';
         }
 
         if (!empty($message)) {

@@ -51,11 +51,16 @@ abstract class Score
         return $this->type;
     }
 
-    public function update(RelativeScore $score): void
+    public function update(Score $score): void
     {
         $userPointsValue = $this->getPoints()->getValue();
         $newPointsValue = $score->getPoints()->getValue();
-        $operation = $score->getOperation();
+
+        if ($score instanceof RelativeScore) {
+            $operation = $score->getOperation()->getValue();
+        } else {
+            $operation = RelativeScoreOperation::ADD_OPERATION;
+        }
 
         $updatedPoints = $this->performOperation(
             $userPointsValue,
@@ -71,9 +76,9 @@ abstract class Score
     private function performOperation(
         int $userPoints,
         int $newPoints,
-        RelativeScoreOperation $operation
+        string $operation
     ): int {
-        switch ($operation->getValue()) {
+        switch ($operation) {
             case RelativeScoreOperation::ADD_OPERATION:
                 return $userPoints + $newPoints;
             case RelativeScoreOperation::SUBSTRACT_OPERATION:
