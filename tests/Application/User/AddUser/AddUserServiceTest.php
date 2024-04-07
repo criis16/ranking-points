@@ -68,11 +68,48 @@ class AddUserServiceTest extends TestCase
         $this->assertEquals($expectedResult, $this->sut->execute($addUserRequest));
     }
 
+    /**
+     * @dataProvider relativeScoreDataProvider
+     */
+    public function testRelativeScoreExecuteWorksCorrectly(
+        AddUserRequest $addUserRequest,
+        User $user,
+        UserId $userId,
+        ScorePoints $totalScorePoints,
+        RelativeScoreOperation $relativeScoreOperation,
+        array $users,
+        bool $expectedResult
+    ): void {
+        $this->repository->expects(self::once())
+            ->method('getUserById')
+            ->with($userId)
+            ->willReturn($users);
+        $this->repository->expects(self::once())
+            ->method('saveUser')
+            ->with($user)
+            ->willReturn(true);
+
+        $this->addRelativeScoreService->expects(self::once())
+            ->method('execute')
+            ->with($user, $totalScorePoints, $relativeScoreOperation)
+            ->willReturn($user);
+
+        $this->assertEquals($expectedResult, $this->sut->execute($addUserRequest));
+    }
+
     public function absoluteScoreDataProvier(): array
     {
         return [
             'new_user_absolute_score_case' => self::newUserAbsoluteScoreCase(),
             'existing_user_absolute_score_case' => self::existingUserAbsoluteScoreCase()
+        ];
+    }
+
+    public function relativeScoreDataProvider(): array
+    {
+        return [
+            'new_user_relative_score_case' => self::newUserRelativeScoreCase(),
+            'existing_user_relative_score_case' => self::existingUserRelativeScoreCase()
         ];
     }
 
@@ -127,43 +164,6 @@ class AddUserServiceTest extends TestCase
             'score_points_input' => $totalScorePoints,
             'check_user_output' => [$user],
             'expected_output' => true
-        ];
-    }
-
-    /**
-     * @dataProvider relativeScoreDataProvider
-     */
-    public function testRelativeScoreExecuteWorksCorrectly(
-        AddUserRequest $addUserRequest,
-        User $user,
-        UserId $userId,
-        ScorePoints $totalScorePoints,
-        RelativeScoreOperation $relativeScoreOperation,
-        array $users,
-        bool $expectedResult
-    ): void {
-        $this->repository->expects(self::once())
-            ->method('getUserById')
-            ->with($userId)
-            ->willReturn($users);
-        $this->repository->expects(self::once())
-            ->method('saveUser')
-            ->with($user)
-            ->willReturn(true);
-
-        $this->addRelativeScoreService->expects(self::once())
-            ->method('execute')
-            ->with($user, $totalScorePoints, $relativeScoreOperation)
-            ->willReturn($user);
-
-        $this->assertEquals($expectedResult, $this->sut->execute($addUserRequest));
-    }
-
-    public function relativeScoreDataProvider(): array
-    {
-        return [
-            'new_user_relative_score_case' => self::newUserRelativeScoreCase(),
-            'existing_user_relative_score_case' => self::existingUserRelativeScoreCase()
         ];
     }
 
