@@ -71,7 +71,7 @@ class AddUserServiceTest extends TestCase
     public function absoluteScoreDataProvier(): array
     {
         return [
-            'new_user__absolute_score_case' => self::newUserAbsoluteScoreCase(),
+            'new_user_absolute_score_case' => self::newUserAbsoluteScoreCase(),
             'existing_user_absolute_score_case' => self::existingUserAbsoluteScoreCase()
         ];
     }
