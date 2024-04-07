@@ -12,6 +12,8 @@ use App\Application\User\Ranking\GetTopRankedUsersService;
 
 class GetRankedUsersServiceTest extends TestCase
 {
+    private const USER_ADAPTED = 'an array with adapted user';
+
     private GetRankedUsersService $sut;
 
     /** @var GetTopRankedUsersService&MockObject */
@@ -55,17 +57,17 @@ class GetRankedUsersServiceTest extends TestCase
      */
     public function testAtRankingExecuteWorksCorrectly(
         string $rankingType,
-        int $firstNumber,
-        int $secondNumber,
+        int $position,
+        int $range,
         array $users,
         array $adaptedUser,
         array $expectedResult
     ): void {
-        $this->mockAtRankedUsersService($firstNumber, $secondNumber, $users);
+        $this->mockAtRankedUsersService($position, $range, $users);
         $this->mockUserAdapter($users, $adaptedUser);
         $this->assertEquals(
             $expectedResult,
-            $this->sut->execute($rankingType, $firstNumber, $secondNumber)
+            $this->sut->execute($rankingType, $position, $range)
         );
     }
 
@@ -76,23 +78,26 @@ class GetRankedUsersServiceTest extends TestCase
                 'ranking_type_input' => 'top',
                 'top_number_input' => 1,
                 'users_output' => [
-                    $this->createMock(User::class),
+                    $this->createMock(User::class)
                 ],
-                'adapt_output' => ['id' => 'a user id', 'score' => 9999],
-                'expected_output' => [['id' => 'a user id', 'score' => 9999]]
+                'adapt_output' => [self::USER_ADAPTED],
+                'expected_output' => [
+                    [self::USER_ADAPTED]
+                ]
             ],
             'top_multiple_users_case' => [
                 'ranking_type_input' => 'top',
-                'top_number_input' => 1,
+                'top_number_input' => 2,
                 'users_output' => [
                     $this->createMock(User::class),
                     $this->createMock(User::class)
                 ],
-                'adapt_output' => ['id' => 'a user id', 'score' => 9999],
+                'adapt_output' => [self::USER_ADAPTED],
                 'expected_output' => [
-                    ['id' => 'a user id', 'score' => 9999],
-                    ['id' => 'a user id', 'score' => 9999]
+                    [self::USER_ADAPTED],
+                    [self::USER_ADAPTED]
                 ]
+
             ]
         ];
     }
@@ -102,32 +107,32 @@ class GetRankedUsersServiceTest extends TestCase
         return [
             'at_simple_case' => [
                 'ranking_type_input' => 'at',
-                'first_number_input' => 1,
-                'second_number_input' => 1,
+                'position_number_input' => 1,
+                'range_number_input' => 1,
                 'users_output' => [
                     $this->createMock(User::class),
                     $this->createMock(User::class)
                 ],
-                'adapt_output' => ['id' => 'a user id', 'score' => 9999],
+                'adapt_output' => [self::USER_ADAPTED],
                 'expected_output' => [
-                    ['id' => 'a user id', 'score' => 9999],
-                    ['id' => 'a user id', 'score' => 9999]
+                    [self::USER_ADAPTED],
+                    [self::USER_ADAPTED]
                 ],
             ],
             'at_multiple_users_case' => [
                 'ranking_type_input' => 'at',
-                'first_number_input' => 3,
-                'second_number_input' => 1,
+                'position_number_input' => 3,
+                'range_number_input' => 1,
                 'users_output' => [
                     $this->createMock(User::class),
                     $this->createMock(User::class),
                     $this->createMock(User::class)
                 ],
-                'adapt_output' => ['id' => 'a user id', 'score' => 9999],
+                'adapt_output' => [self::USER_ADAPTED],
                 'expected_output' => [
-                    ['id' => 'a user id', 'score' => 9999],
-                    ['id' => 'a user id', 'score' => 9999],
-                    ['id' => 'a user id', 'score' => 9999]
+                    [self::USER_ADAPTED],
+                    [self::USER_ADAPTED],
+                    [self::USER_ADAPTED]
                 ]
             ]
         ];
