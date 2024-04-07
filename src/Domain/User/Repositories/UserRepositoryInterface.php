@@ -29,4 +29,21 @@ interface UserRepositoryInterface
      * @return User[]
      */
     public function getUsers(): array;
+
+    /**
+     * Returns an array of top N users
+     *
+     * @param integer $top
+     * @return array
+     */
+    public function getTopUsers(int $top): array;
+
+    /**
+     * Returns an array of users given a range
+     *
+     * @param integer $position
+     * @param integer $range
+     * @return array
+     */
+    public function getUserByRange(int $position, int $range): array;
 }
