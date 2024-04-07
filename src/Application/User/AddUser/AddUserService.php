@@ -4,7 +4,6 @@ namespace App\Application\User\AddUser;
 
 use App\Domain\User\User;
 use App\Domain\User\UserId;
-use InvalidArgumentException;
 use App\Domain\Score\ScorePoints;
 use App\Domain\Score\AbsoluteScore\AbsoluteScore;
 use App\Domain\Score\Services\AddRelativeScoreService;
@@ -15,8 +14,8 @@ use App\Infrastructure\User\Repositories\AddUserRequest;
 
 class AddUserService
 {
-    private const EMPTY_SCORE = 0;
-    
+    public const EMPTY_SCORE = 0;
+
     private UserRepositoryInterface $repository;
     private AddRelativeScoreService $addRelativeScoreService;
     private AddAbsoluteScoreService $addAbsoluteScoreService;
