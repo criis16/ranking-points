@@ -3,7 +3,6 @@
 namespace Tests\Domain\User;
 
 use App\Domain\User\User;
-use App\Domain\Score\Score;
 use App\Domain\User\UserId;
 use InvalidArgumentException;
 use App\Domain\Score\ScoreType;
@@ -70,10 +69,13 @@ class UserTest extends TestCase
             ->method('getType')
             ->willReturn($absoluteScoreType);
 
+            $this->userScore->expects(self::once())
+            ->method('update')
+            ->with($absoluteScore);
+
         $this->sut->addScore($absoluteScore);
-        $this->assertEquals($absoluteScore, $this->sut->getScore());
     }
-    
+
     public function testAddRelativeScore(): void
     {
         $relativeScoreType = $this->createMock(ScoreType::class);
