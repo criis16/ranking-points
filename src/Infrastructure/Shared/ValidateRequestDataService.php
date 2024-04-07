@@ -26,7 +26,7 @@ class ValidateRequestDataService
         $totalParams = 0;
         $message = [];
 
-        foreach ($request as $requestKey => $requestValue) {
+        foreach (\array_keys($request) as $requestKey) {
             if (!\in_array($requestKey, $requiredFields) || empty($requestKey)) {
                 $message[$requestKey] = \ucfirst($requestKey) . ' is a required field';
             }
