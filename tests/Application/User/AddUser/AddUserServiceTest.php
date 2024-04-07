@@ -3,7 +3,6 @@
 namespace Tests\Application\User\AddUser;
 
 use App\Domain\User\User;
-use App\Domain\Score\Score;
 use App\Domain\User\UserId;
 use PHPUnit\Framework\TestCase;
 use App\Domain\Score\ScorePoints;
