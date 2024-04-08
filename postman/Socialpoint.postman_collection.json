@@ -1,0 +1,147 @@
+{
+	"info": {
+		"_postman_id": "ca117b0b-d5c3-4c29-8bd5-ec7cbc63167c",
+		"name": "Socialpoint",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28856486"
+	},
+	"item": [
+		{
+			"name": "Submit User scores",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "total",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "score",
+							"value": "+15",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/user/:user_id/score",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"user",
+						":user_id",
+						"score"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					],
+					"variable": [
+						{
+							"key": "user_id",
+							"value": "999"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8000/user/get_all",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"user",
+						"get_all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ranked users Top type",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8000/ranking?type=Top30",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"ranking"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "Top30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ranked users At type",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8000/ranking?type=At2/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"ranking"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "At2/1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
