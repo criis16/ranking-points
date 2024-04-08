@@ -24,6 +24,13 @@ class RelativeScoreOperation
         $this->operation = $operation;
     }
 
+    /**
+     * Instance method
+     *
+     * @param string $operation
+     * @return RelativeScoreOperation
+     * @throws InvalidArgumentException
+     */
     public static function instance(string $operation): RelativeScoreOperation
     {
         if (!\in_array($operation, self::ALLOWED_OPERATIONS)) {

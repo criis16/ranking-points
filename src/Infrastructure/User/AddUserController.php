@@ -76,6 +76,7 @@ class AddUserController
      *
      * @param array $requestData
      * @return void
+     * @throws InvalidArgumentException
      */
     private function setRequestData(
         string $userId,

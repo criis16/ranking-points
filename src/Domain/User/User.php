@@ -44,6 +44,7 @@ class User
      * Adds a score to the user
      *
      * @return void
+     * @throws InvalidArgumentException
      */
     public function addScore(Score $score): void
     {

@@ -24,6 +24,13 @@ class ScoreType
         $this->type = $type;
     }
 
+    /**
+     * Instance method
+     *
+     * @param string $type
+     * @return ScoreType
+     * @throws InvalidArgumentException
+     */
     public static function instance(string $type): ScoreType
     {
         if (!\in_array($type, self::ALLOWED_TYPES)) {

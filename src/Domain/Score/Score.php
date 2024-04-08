@@ -2,6 +2,7 @@
 
 namespace App\Domain\Score;
 
+use InvalidArgumentException;
 use App\Domain\Score\ScoreType;
 use App\Domain\Score\ScorePoints;
 use App\Domain\Score\RelativeScore\RelativeScore;
@@ -86,6 +87,7 @@ abstract class Score
      * @param integer $newPoints
      * @param string $operation
      * @return integer
+     * @throws InvalidArgumentException
      */
     private function performOperation(
         int $userPoints,
@@ -98,7 +100,7 @@ abstract class Score
             case RelativeScoreOperation::SUBSTRACT_OPERATION:
                 return $userPoints - $newPoints;
             default:
-                throw new \InvalidArgumentException('Invalid operation type.');
+                throw new InvalidArgumentException('Invalid operation type.');
         }
     }
 }

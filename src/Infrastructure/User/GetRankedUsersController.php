@@ -34,6 +34,7 @@ class GetRankedUsersController
      * Method that gets ranked users
      *
      * @return JsonResponse
+     * @throws InvalidArgumentException
      */
     public function getRankedUsers(Request $request): JsonResponse
     {
@@ -90,6 +91,7 @@ class GetRankedUsersController
      *
      * @param string $type
      * @return array
+     * @throws InvalidArgumentException
      */
     private function extractRankingTypeData(string $type): array
     {
