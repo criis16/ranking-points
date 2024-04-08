@@ -15,7 +15,7 @@ class GetTopRankedUsersService
     }
 
     /**
-     * Returns the top N users
+     * Returns an array of the top N users
      *
      * @param integer $top
      * @return array

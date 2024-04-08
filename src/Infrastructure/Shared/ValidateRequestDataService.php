@@ -7,6 +7,7 @@ use App\Infrastructure\Shared\Exceptions\RequestException;
 class ValidateRequestDataService
 {
     private const MAX_ALLOWED_PARAMS = 1;
+
     /**
      * Validates the request input data
      *

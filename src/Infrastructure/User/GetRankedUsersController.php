@@ -85,6 +85,12 @@ class GetRankedUsersController
         );
     }
 
+    /**
+     * Extracts the ranking data
+     *
+     * @param string $type
+     * @return array
+     */
     private function extractRankingTypeData(string $type): array
     {
         $result = [];
@@ -100,6 +106,12 @@ class GetRankedUsersController
         return $result;
     }
 
+    /**
+     * Checks if the given ranking type is valid
+     *
+     * @param string $rankingType
+     * @return boolean
+     */
     private function isValidRankingType(string $rankingType): bool
     {
         return \in_array($rankingType, self::RANKING_TYPES);

@@ -41,7 +41,7 @@ class User
     }
 
     /**
-     * Adds the user score
+     * Adds a score to the user
      *
      * @return void
      */

@@ -9,6 +9,14 @@ use App\Domain\Score\RelativeScore\RelativeScoreOperation;
 
 class AddRelativeScoreService
 {
+    /**
+     * Updates the score to a given user depending on the operation given
+     *
+     * @param User $user
+     * @param ScorePoints $scorePoints
+     * @param RelativeScoreOperation $operation
+     * @return User
+     */
     public function execute(
         User $user,
         ScorePoints $scorePoints,

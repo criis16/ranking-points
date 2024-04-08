@@ -6,6 +6,12 @@ use App\Domain\User\User;
 
 class UserAdapter
 {
+    /**
+     * Adapts a given User domain object into an array
+     *
+     * @param User $user
+     * @return array
+     */
     public function adapt(
         User $user
     ): array {

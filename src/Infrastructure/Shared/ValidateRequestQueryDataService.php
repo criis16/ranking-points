@@ -7,7 +7,7 @@ use App\Infrastructure\Shared\Exceptions\RequestException;
 class ValidateRequestQueryDataService
 {
     /**
-     * Validates the request input data
+     * Validates the request query input data
      *
      * @param array $request
      * @param array $requiredFields

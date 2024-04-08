@@ -51,6 +51,12 @@ abstract class Score
         return $this->type;
     }
 
+    /**
+     * Updates the score given the new score
+     *
+     * @param Score $score
+     * @return void
+     */
     public function update(Score $score): void
     {
         $userPointsValue = $this->getPoints()->getValue();
@@ -73,6 +79,14 @@ abstract class Score
         );
     }
 
+    /**
+     * Performs the given operation
+     *
+     * @param integer $userPoints
+     * @param integer $newPoints
+     * @param string $operation
+     * @return integer
+     */
     private function performOperation(
         int $userPoints,
         int $newPoints,

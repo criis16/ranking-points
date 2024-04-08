@@ -23,7 +23,14 @@ class GetRankedUsersService
         $this->adapter = $adapter;
     }
 
-
+    /**
+     * Return an array of users given the ranking type
+     *
+     * @param string $rankingType
+     * @param integer $firstNumber
+     * @param integer|null $secondNumber
+     * @return array
+     */
     public function execute(
         string $rankingType,
         int $firstNumber,
