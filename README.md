@@ -10,13 +10,13 @@ On postman app click import and select or drag and drop the previous file.
 
 ## Docker configuration
 
-Run on your bash:
+Run on your bash after unzip the given file:
 
 ```
-    cd socialpoint
+    cd socialpoint-main
     docker compose up -d --build
-    docker compose exec app composer install (to install dependencies on local)
-    docker compose exec app php ./vendor/bin/phpunit tests (to run tests)
+    docker compose exec app composer install
+    docker compose exec app php ./vendor/bin/phpunit tests (to run all tests)
 ```
 
 ## Available Endpoints
