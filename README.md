@@ -5,15 +5,15 @@ how to use them, and what to expect in the responses.
 
 ## Postman endpoints
 
-You wil find the postman endpoints at /postman/Socialpoint.postman_collection
+You wil find the postman endpoints at /postman/ranking_points.postman_collection
 On postman app click import and select or drag and drop the previous file.
 
 ## Docker configuration
 
-Run on your bash after unzip the given file:
+Run on your bash after clone the repository:
 
 ```
-    cd socialpoint-main
+    cd ranking-points
     docker compose up -d --build
     docker compose exec app composer install
     docker compose exec app php ./vendor/bin/phpunit tests (to run all tests)
