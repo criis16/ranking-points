@@ -18,15 +18,13 @@ class LocalRepository implements UserRepositoryInterface
         $this->requestStack = $requestStack;
     }
 
-    public function saveUser(User $user): bool
+    public function saveUser(User $user): void
     {
         $userIdValue = $user->getUserId()->getValue();
         $session = $this->requestStack->getSession();
         $users = $session->get('users') ?? [];
         $users[$userIdValue] = $user;
         $session->set('users', $users);
-
-        return true;
     }
 
     public function getUserById(UserId $userId): array

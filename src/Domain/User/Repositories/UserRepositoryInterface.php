@@ -13,7 +13,7 @@ interface UserRepositoryInterface
      * @param User $user
      * @return boolean
      */
-    public function saveUser(User $user): bool;
+    public function saveUser(User $user): void;
 
     /**
      * Returns a user given an id
