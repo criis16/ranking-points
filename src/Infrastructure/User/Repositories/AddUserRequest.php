@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure\User\Repositories;
 
+use InvalidArgumentException;
+
 class AddUserRequest
 {
     private ?string $id;
@@ -10,10 +12,10 @@ class AddUserRequest
     private ?int $relativeScore;
 
     public function __construct(
-        string $id = null,
-        int $totalScore = null,
-        string $operation = null,
-        int $relativeScore = null
+        ?string $id = null,
+        ?int $totalScore = null,
+        ?string $operation = null,
+        ?int $relativeScore = null
     ) {
         $this->id = $id;
         $this->totalScore = $totalScore;
@@ -103,5 +105,50 @@ class AddUserRequest
     public function setRelativeScore(int $relativeScore): void
     {
         $this->relativeScore = $relativeScore;
+    }
+
+    /**
+     * Set score data
+     *
+     * @param array $data
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public function setScore(array $data): void
+    {
+        if (\array_key_exists('total', $data)) {
+            $this->setTotalScore($data['total']);
+        }
+
+        if (\array_key_exists('score', $data)) {
+            $relativeScoreData = $this->extractRelativeScore($data['score']);
+
+            if (empty($relativeScoreData)) {
+                throw new InvalidArgumentException('Invalid score.');
+            }
+
+            $this->setOperation($relativeScoreData['operation']);
+            $this->setRelativeScore($relativeScoreData['value']);
+        }
+    }
+
+    /**
+     * Extract relative score data
+     *
+     * @param string $relativeScore
+     * @return array
+     */
+    private function extractRelativeScore(string $relativeScore): array
+    {
+        $result = [];
+
+        if (preg_match('/^(^[\+\-\*\/])(\d+)$/is', $relativeScore, $matches)) {
+            $result = [
+                'operation' => $matches[1],
+                'value' => \intval($matches[2])
+            ];
+        }
+
+        return $result;
     }
 }

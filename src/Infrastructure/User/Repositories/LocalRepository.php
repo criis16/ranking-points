@@ -18,15 +18,26 @@ class LocalRepository implements UserRepositoryInterface
         $this->requestStack = $requestStack;
     }
 
-    public function saveUser(User $user): bool
+    public function saveUser(User $user): void
     {
         $userIdValue = $user->getUserId()->getValue();
         $session = $this->requestStack->getSession();
         $users = $session->get('users') ?? [];
-        $users[$userIdValue] = $user;
-        $session->set('users', $users);
 
-        return true;
+        $existingUserIndexes = \array_keys(
+            \array_filter($users, function (User $user) use ($userIdValue) {
+                return $user->getUserId()->getValue() === $userIdValue;
+            })
+        );
+
+        if (!empty($existingUserIndexes)) {
+            $users[$existingUserIndexes[0]] = $user;
+        } else {
+            $users[] = $user;
+        }
+
+        $users = $this->sortUsersByScore($users);
+        $session->set('users', $users);
     }
 
     public function getUserById(UserId $userId): array
@@ -36,33 +47,23 @@ class LocalRepository implements UserRepositoryInterface
         $userIdValue = $userId->getValue();
         $users = $session->get('users') ?? [];
 
-        if (\array_key_exists($userIdValue, $users)) {
-            $result = [$users[$userIdValue]];
-        }
+        $result = \array_filter($users, function (User $user) use ($userIdValue) {
+            return $user->getUserId()->getValue() === $userIdValue;
+        });
 
-        return $result;
+        return \array_values($result);
     }
 
     public function getUsers(): array
     {
         $session = $this->requestStack->getSession();
-        $users = $session->get('users') ?? [];
-
-        if (!empty($users)) {
-            $users = $this->sortUsersByScore($users);
-        }
-
-        return $users;
+        return $session->get('users') ?? [];
     }
 
     public function getTopUsers(int $top): array
     {
         $session = $this->requestStack->getSession();
         $users = $session->get('users') ?? [];
-
-        if (!empty($users)) {
-            $users = $this->sortUsersByScore($users);
-        }
 
         return \array_slice($users, self::FIRST_OFFSET, $top);
     }
@@ -71,10 +72,6 @@ class LocalRepository implements UserRepositoryInterface
     {
         $session = $this->requestStack->getSession();
         $users = $session->get('users') ?? [];
-
-        if (!empty($users)) {
-            $users = $this->sortUsersByScore($users);
-        }
 
         if (!\array_key_exists($position, $users)) {
             return [];
@@ -94,7 +91,7 @@ class LocalRepository implements UserRepositoryInterface
      */
     private function sortUsersByScore(array $users): array
     {
-        usort(
+        \usort(
             $users,
             function (User $firstUser, User $secondUser) {
                 $firstUserScore = $firstUser->getScore()->getPoints()->getValue();

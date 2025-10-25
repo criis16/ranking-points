@@ -8,6 +8,7 @@ use App\Domain\Score\ScorePoints;
 use PHPUnit\Framework\MockObject\MockObject;
 use App\Domain\Score\RelativeScore\RelativeScore;
 use App\Domain\Score\RelativeScore\RelativeScoreOperation;
+use PhpParser\Node\Name\Relative;
 
 class RelativeScoreTest extends TestCase
 {

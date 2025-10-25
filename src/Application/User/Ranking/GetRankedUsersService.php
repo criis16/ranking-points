@@ -4,11 +4,12 @@ namespace App\Application\User\Ranking;
 
 use App\Domain\User\User;
 use App\Application\User\Adapters\UserAdapter;
-use App\Infrastructure\User\GetRankedUsersController;
 use App\Application\User\Ranking\GetAtRankedUsersService;
 
 class GetRankedUsersService
 {
+    private const TOP_RANKING = 'top';
+
     private GetTopRankedUsersService $getTopRankedUsersService;
     private GetAtRankedUsersService $getAtRankedUsersService;
     private UserAdapter $adapter;
@@ -36,7 +37,7 @@ class GetRankedUsersService
         int $firstNumber,
         ?int $secondNumber = null,
     ): array {
-        if ($rankingType === GetRankedUsersController::TOP_RANKING) {
+        if ($rankingType === self::TOP_RANKING) {
             $users = $this->getTopRankedUsersService->execute($firstNumber);
         } else {
             $users = $this->getAtRankedUsersService->execute($firstNumber, $secondNumber);

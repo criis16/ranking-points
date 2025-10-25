@@ -4,11 +4,15 @@ namespace App\Domain\User;
 
 use App\Domain\Score\Score;
 use App\Domain\User\UserId;
-use InvalidArgumentException;
-use App\Domain\Score\ScoreType;
+use App\Domain\Score\ScorePoints;
+use App\Domain\Score\AbsoluteScore\AbsoluteScore;
+use App\Domain\Score\RelativeScore\RelativeScore;
+use App\Domain\Score\RelativeScore\RelativeScoreOperation;
 
 class User
 {
+    private const EMPTY_SCORE = 0;
+
     private UserId $userId;
     private Score $userScore;
 
@@ -18,6 +22,16 @@ class User
     ) {
         $this->userId = $userId;
         $this->userScore = $userScore;
+    }
+
+    public static function create(UserId $userId): self
+    {
+        return new self(
+            $userId,
+            new AbsoluteScore(
+                new ScorePoints(self::EMPTY_SCORE)
+            )
+        );
     }
 
     /**
@@ -40,22 +54,18 @@ class User
         return $this->userScore;
     }
 
-    /**
-     * Adds a score to the user
-     *
-     * @return void
-     * @throws InvalidArgumentException
-     */
-    public function addScore(Score $score): void
+    public function setAbsoluteScore(ScorePoints $scorePoints): void
     {
-        $scoreTypeValue = $score->getType()->getValue();
-        if (
-            $scoreTypeValue === ScoreType::ABSOLUTE_SCORE_TYPE ||
-            $scoreTypeValue === ScoreType::RELATIVE_SCORE_TYPE
-        ) {
-            $this->userScore->update($score);
-        } else {
-            throw new InvalidArgumentException('Score type not allowed: ' . $scoreTypeValue);
-        }
+        $absoluteScore = new AbsoluteScore($scorePoints);
+        $absoluteScore->update($this->userScore);
+        $this->userScore = $absoluteScore;
+    }
+
+    public function setRelativeScore(ScorePoints $scorePoints, RelativeScoreOperation $operation): void
+    {
+        $relativeScore = new RelativeScore($scorePoints);
+        $relativeScore->setOperation($operation);
+        $relativeScore->update($this->userScore);
+        $this->userScore = $relativeScore;
     }
 }

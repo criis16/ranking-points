@@ -32,4 +32,11 @@ class AbsoluteScoreTest extends TestCase
     {
         self::assertEquals(ScoreType::ABSOLUTE_SCORE_TYPE, $this->sut->getType()->getValue());
     }
+
+    public function testUpdate(): void
+    {
+        $newScorePoints = new ScorePoints(10);
+        $this->sut->update(new AbsoluteScore($newScorePoints));
+        self::assertEquals($newScorePoints, $this->sut->getPoints());
+    }
 }
