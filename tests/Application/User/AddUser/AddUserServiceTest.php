@@ -8,10 +8,8 @@ use PHPUnit\Framework\TestCase;
 use App\Domain\Score\ScorePoints;
 use PHPUnit\Framework\MockObject\MockObject;
 use App\Application\User\AddUser\AddUserService;
-use App\Domain\Score\AbsoluteScore\AbsoluteScore;
+use App\Application\User\GetUsers\GetUserByIdService;
 use App\Domain\Score\RelativeScore\RelativeScoreOperation;
-use App\Domain\Score\Services\AddAbsoluteScoreService;
-use App\Domain\Score\Services\AddRelativeScoreService;
 use App\Infrastructure\User\Repositories\AddUserRequest;
 use App\Domain\User\Repositories\UserRepositoryInterface;
 
@@ -22,222 +20,160 @@ class AddUserServiceTest extends TestCase
     /** @var UserRepositoryInterface&MockObject */
     private UserRepositoryInterface $repository;
 
-    /** @var AddRelativeScoreService&MockObject */
-    private AddRelativeScoreService $addRelativeScoreService;
-
-    /** @var AddAbsoluteScoreService&MockObject */
-    private AddAbsoluteScoreService $addAbsoluteScoreService;
+    /** @var GetUserByIdService&MockObject */
+    private GetUserByIdService $getUserByIdService;
 
     protected function setUp(): void
     {
         $this->repository = $this->createMock(UserRepositoryInterface::class);
-        $this->addRelativeScoreService = $this->createMock(AddRelativeScoreService::class);
-        $this->addAbsoluteScoreService = $this->createMock(AddAbsoluteScoreService::class);
+        $this->getUserByIdService = $this->createMock(GetUserByIdService::class);
         $this->sut = new AddUserService(
             $this->repository,
-            $this->addRelativeScoreService,
-            $this->addAbsoluteScoreService
+            $this->getUserByIdService
         );
     }
 
-    /**
-     * @dataProvider absoluteScoreDataProvier
-     */
-    public function testAbsoluteScoreExecuteWorksCorrectly(
-        AddUserRequest $addUserRequest,
-        User $user,
-        UserId $userId,
-        ScorePoints $totalScorePoints,
-        array $users,
-        bool $expectedResult
-    ): void {
-        $this->repository->expects(self::once())
-            ->method('getUserById')
-            ->with($userId)
-            ->willReturn($users);
-        $this->repository->expects(self::once())
-            ->method('saveUser')
-            ->with($user)
-            ->willReturn(true);
-
-        $this->addAbsoluteScoreService->expects(self::once())
-            ->method('execute')
-            ->with($user, $totalScorePoints)
-            ->willReturn($user);
-
-        $this->assertEquals($expectedResult, $this->sut->execute($addUserRequest));
-    }
-
-    /**
-     * @dataProvider relativeScoreDataProvider
-     */
-    public function testRelativeScoreExecuteWorksCorrectly(
-        AddUserRequest $addUserRequest,
-        User $user,
-        UserId $userId,
-        ScorePoints $totalScorePoints,
-        RelativeScoreOperation $relativeScoreOperation,
-        array $users,
-        bool $expectedResult
-    ): void {
-        $this->repository->expects(self::once())
-            ->method('getUserById')
-            ->with($userId)
-            ->willReturn($users);
-        $this->repository->expects(self::once())
-            ->method('saveUser')
-            ->with($user)
-            ->willReturn(true);
-
-        $this->addRelativeScoreService->expects(self::once())
-            ->method('execute')
-            ->with($user, $totalScorePoints, $relativeScoreOperation)
-            ->willReturn($user);
-
-        $this->assertEquals($expectedResult, $this->sut->execute($addUserRequest));
-    }
-
-    public function absoluteScoreDataProvier(): array
+    public function testExecuteAddsNewUserWithAbsoluteScore(): void
     {
-        return [
-            'new_user_absolute_score_case' => self::newUserAbsoluteScoreCase(),
-            'existing_user_absolute_score_case' => self::existingUserAbsoluteScoreCase()
-        ];
-    }
+        $userIdValue = 'user id';
+        $totalScore = 150;
 
-    public function relativeScoreDataProvider(): array
-    {
-        return [
-            'new_user_relative_score_case' => self::newUserRelativeScoreCase(),
-            'existing_user_relative_score_case' => self::existingUserRelativeScoreCase()
-        ];
-    }
-
-    private function newUserAbsoluteScoreCase(): array
-    {
-        $totalScore = 9999;
-        $userIdString = 'a user id';
-        $userId = new UserId($userIdString);
-        $emptyScorePoints = new ScorePoints(AddUserService::EMPTY_SCORE);
-        $totalScorePoints = new ScorePoints($totalScore);
-        $absoluteScore = new AbsoluteScore($emptyScorePoints);
-        $user = new User($userId, $absoluteScore);
-
-        $addUserRequest = $this->createMock(AddUserRequest::class);
-        $addUserRequest->expects(self::once())
+        /** @var AddUserRequest&MockObject */
+        $request = $this->createMock(AddUserRequest::class);
+        $request->expects($this->once())
             ->method('getId')
-            ->willReturn($userIdString);
-        $addUserRequest->expects(self::once())
+            ->willReturn($userIdValue);
+        $request->expects($this->once())
             ->method('getTotalScore')
             ->willReturn($totalScore);
+        $request->expects($this->never())
+            ->method('getRelativeScore');
+        $request->expects($this->never())
+            ->method('getOperation');
 
-        return [
-            'request_input' => $addUserRequest,
-            'user_input' => $user,
-            'user_id_input' => $userId,
-            'score_points_input' => $totalScorePoints,
-            'check_user_output' => [],
-            'expected_output' => true
-        ];
+        $this->getUserByIdService->expects($this->once())
+            ->method('execute')
+            ->with($userIdValue)
+            ->willReturn([]);
+
+        $user = User::create(new UserId($userIdValue));
+        $user->setAbsoluteScore(new ScorePoints($totalScore));
+        $this->repository->expects($this->once())
+            ->method('saveUser')
+            ->with($user);
+
+        $this->sut->execute($request);
     }
 
-    private function existingUserAbsoluteScoreCase(): array
+    public function testExecuteAddsExistingUserWithAbsoluteScore(): void
     {
-        $totalScore = 9999;
-        $userIdString = 'a user id';
-        $userId = new UserId($userIdString);
-        $totalScorePoints = new ScorePoints($totalScore);
+        $userIdValue = 'user id';
+        $totalScore = 150;
+
+        /** @var AddUserRequest&MockObject */
+        $request = $this->createMock(AddUserRequest::class);
+        $request->expects($this->once())
+            ->method('getId')
+            ->willReturn($userIdValue);
+        $request->expects($this->once())
+            ->method('getTotalScore')
+            ->willReturn($totalScore);
+        $request->expects($this->never())
+            ->method('getRelativeScore');
+        $request->expects($this->never())
+            ->method('getOperation');
+
         $user = $this->createMock(User::class);
+        $user->expects($this->once())
+            ->method('setAbsoluteScore')
+            ->with(new ScorePoints($totalScore));
+        $this->getUserByIdService->expects($this->once())
+            ->method('execute')
+            ->with($userIdValue)
+            ->willReturn([$user]);
 
-        $addUserRequest = $this->createMock(AddUserRequest::class);
-        $addUserRequest->expects(self::once())
-            ->method('getId')
-            ->willReturn($userIdString);
-        $addUserRequest->expects(self::once())
-            ->method('getTotalScore')
-            ->willReturn($totalScore);
+        $this->repository->expects($this->once())
+            ->method('saveUser')
+            ->with($user);
 
-        return [
-            'request_input' => $addUserRequest,
-            'user_input' => $user,
-            'user_id_input' => $userId,
-            'score_points_input' => $totalScorePoints,
-            'check_user_output' => [$user],
-            'expected_output' => true
-        ];
+        $this->sut->execute($request);
     }
 
-    private function newUserRelativeScoreCase(): array
+    public function testExecuteAddsNewUserWithRelativeScore(): void
     {
-        $totalScore = null;
-        $relativeScore = 20;
-        $operationString = '+';
-        $userIdString = 'a user id';
-        $userId = new UserId($userIdString);
-        $emptyScorePoints = new ScorePoints(AddUserService::EMPTY_SCORE);
-        $absoluteScore = new AbsoluteScore($emptyScorePoints);
-        $relativeScorePoints = new ScorePoints($relativeScore);
-        $user = new User($userId, $absoluteScore);
-        $relativeScoreOperation = RelativeScoreOperation::instance($operationString);
+        $userIdValue = 'user id';
+        $relativeScore = 150;
+        $operation = '+';
 
-        $addUserRequest = $this->createMock(AddUserRequest::class);
-        $addUserRequest->expects(self::once())
+        /** @var AddUserRequest&MockObject */
+        $request = $this->createMock(AddUserRequest::class);
+        $request->expects($this->once())
             ->method('getId')
-            ->willReturn($userIdString);
-        $addUserRequest->expects(self::once())
+            ->willReturn($userIdValue);
+        $request->expects($this->once())
             ->method('getTotalScore')
-            ->willReturn($totalScore);
-        $addUserRequest->expects(self::once())
+            ->willReturn(null);
+        $request->expects($this->once())
             ->method('getRelativeScore')
             ->willReturn($relativeScore);
-        $addUserRequest->expects(self::once())
+        $request->expects($this->once())
             ->method('getOperation')
-            ->willReturn($operationString);
+            ->willReturn($operation);
 
-        return [
-            'request_input' => $addUserRequest,
-            'user_input' => $user,
-            'user_id_input' => $userId,
-            'score_points_input' => $relativeScorePoints,
-            'operation_input' => $relativeScoreOperation,
-            'check_user_output' => [],
-            'expected_output' => true
-        ];
+        $this->getUserByIdService->expects($this->once())
+            ->method('execute')
+            ->with($userIdValue)
+            ->willReturn([]);
+
+        $user = User::create(new UserId($userIdValue));
+        $user->setRelativeScore(
+            new ScorePoints($relativeScore),
+            RelativeScoreOperation::instance($operation)
+        );
+        $this->repository->expects($this->once())
+            ->method('saveUser')
+            ->with($user);
+
+        $this->sut->execute($request);
     }
 
-    private function existingUserRelativeScoreCase(): array
+    public function testExecuteAddsExistingUserWithRelativeScore(): void
     {
-        $totalScore = null;
-        $relativeScore = 20;
-        $operationString = '+';
-        $userIdString = 'a user id';
-        $userId = new UserId($userIdString);
-        $relativeScorePoints = new ScorePoints($relativeScore);
-        $relativeScoreOperation = RelativeScoreOperation::instance($operationString);
-        $user = $this->createMock(User::class);
+        $userIdValue = 'user id';
+        $relativeScore = 150;
+        $operation = '+';
 
-        $addUserRequest = $this->createMock(AddUserRequest::class);
-        $addUserRequest->expects(self::once())
+        /** @var AddUserRequest&MockObject */
+        $request = $this->createMock(AddUserRequest::class);
+        $request->expects($this->once())
             ->method('getId')
-            ->willReturn($userIdString);
-        $addUserRequest->expects(self::once())
+            ->willReturn($userIdValue);
+        $request->expects($this->once())
             ->method('getTotalScore')
-            ->willReturn($totalScore);
-        $addUserRequest->expects(self::once())
+            ->willReturn(null);
+        $request->expects($this->once())
             ->method('getRelativeScore')
             ->willReturn($relativeScore);
-        $addUserRequest->expects(self::once())
+        $request->expects($this->once())
             ->method('getOperation')
-            ->willReturn($operationString);
+            ->willReturn($operation);
 
-        return [
-            'request_input' => $addUserRequest,
-            'user_input' => $user,
-            'user_id_input' => $userId,
-            'score_points_input' => $relativeScorePoints,
-            'operation_input' => $relativeScoreOperation,
-            'check_user_output' => [$user],
-            'expected_output' => true
-        ];
+        $user = $this->createMock(User::class);
+        $user->expects($this->once())
+            ->method('setRelativeScore')
+            ->with(
+                new ScorePoints($relativeScore),
+                RelativeScoreOperation::instance($operation)
+            );
+        $this->getUserByIdService->expects($this->once())
+            ->method('execute')
+            ->with($userIdValue)
+            ->willReturn([$user]);
+
+        $this->repository->expects($this->once())
+            ->method('saveUser')
+            ->with($user);
+
+        $this->sut->execute($request);
     }
 }

@@ -40,32 +40,22 @@ class AddUserController
      */
     public function add(Request $request, string $userId): JsonResponse
     {
-        $isSaved = false;
-        $statusCode = 400;
-
         try {
             $requestBody = $request->request->all();
             $this->validateRequestDataService->validate($requestBody, self::REQUIRED_BODY_FIELDS);
-            $this->setRequestData(
-                $userId,
-                $requestBody
-            );
-
-            $isSaved = $this->addUserService->execute($this->addUserRequest);
+            $this->setRequestData($userId, $requestBody);
+            $this->addUserService->execute($this->addUserRequest);
+            $responseMessage = 'The user\'s score has been successfully saved';
+            $statusCode = JsonResponse::HTTP_OK;
         } catch (Exception $e) {
             $responseMessage = $e->getMessage();
-        }
-
-        if ($isSaved) {
-            $responseMessage = 'The user\'s score with id ' . $userId . ' has been successfully saved';
-            $statusCode = 200;
+            $statusCode = JsonResponse::HTTP_BAD_REQUEST;
         }
 
         return new JsonResponse(
             [
                 'status_code' => $statusCode,
                 'message' => $responseMessage,
-                'result' => \intval($isSaved),
             ],
             $statusCode
         );
@@ -83,34 +73,6 @@ class AddUserController
         array $requestData
     ): void {
         $this->addUserRequest->setId($userId);
-
-        if (\array_key_exists('total', $requestData)) {
-            $this->addUserRequest->setTotalScore($requestData['total']);
-        }
-
-        if (\array_key_exists('score', $requestData)) {
-            $scoreData = $this->extractRelativeScore($requestData['score']);
-
-            if (empty($scoreData)) {
-                throw new InvalidArgumentException('Invalid score.');
-            }
-
-            $this->addUserRequest->setOperation($scoreData['operation']);
-            $this->addUserRequest->setRelativeScore($scoreData['value']);
-        }
-    }
-
-    private function extractRelativeScore(string $relativeScore): array
-    {
-        $result = [];
-
-        if (preg_match('/^(^[\+\-\*\/])(\d+)$/is', $relativeScore, $matches)) {
-            $result = [
-                'operation' => $matches[1],
-                'value' => \intval($matches[2])
-            ];
-        }
-
-        return $result;
+        $this->addUserRequest->setScore($requestData);
     }
 }
