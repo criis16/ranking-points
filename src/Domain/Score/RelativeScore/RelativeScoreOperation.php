@@ -9,7 +9,7 @@ class RelativeScoreOperation
     public const ADD_OPERATION = '+';
     public const SUBSTRACT_OPERATION = '-';
 
-    private const ALLOWED_OPERATIONS = [
+    public const ALLOWED_OPERATIONS = [
         self::ADD_OPERATION,
         self::SUBSTRACT_OPERATION
     ];

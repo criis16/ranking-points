@@ -16,4 +16,11 @@ class AbsoluteScore extends Score
             ScoreType::instance(ScoreType::ABSOLUTE_SCORE_TYPE)
         );
     }
+
+    public function update(Score $score): void
+    {
+        $newPointsValue = $this->getPoints()->getValue();
+        $userPointsValue = $score->getPoints()->getValue();
+        $this->setPoints(new ScorePoints($newPointsValue + $userPointsValue));
+    }
 }

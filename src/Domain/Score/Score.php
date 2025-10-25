@@ -2,11 +2,8 @@
 
 namespace App\Domain\Score;
 
-use InvalidArgumentException;
 use App\Domain\Score\ScoreType;
 use App\Domain\Score\ScorePoints;
-use App\Domain\Score\RelativeScore\RelativeScore;
-use App\Domain\Score\RelativeScore\RelativeScoreOperation;
 
 abstract class Score
 {
@@ -52,55 +49,5 @@ abstract class Score
         return $this->type;
     }
 
-    /**
-     * Updates the score given the new score
-     *
-     * @param Score $score
-     * @return void
-     */
-    public function update(Score $score): void
-    {
-        $userPointsValue = $this->getPoints()->getValue();
-        $newPointsValue = $score->getPoints()->getValue();
-
-        if ($score instanceof RelativeScore) {
-            $operation = $score->getOperation()->getValue();
-        } else {
-            $operation = RelativeScoreOperation::ADD_OPERATION;
-        }
-
-        $updatedPoints = $this->performOperation(
-            $userPointsValue,
-            $newPointsValue,
-            $operation
-        );
-
-        $this->setPoints(
-            new ScorePoints($updatedPoints)
-        );
-    }
-
-    /**
-     * Performs the given operation
-     *
-     * @param integer $userPoints
-     * @param integer $newPoints
-     * @param string $operation
-     * @return integer
-     * @throws InvalidArgumentException
-     */
-    private function performOperation(
-        int $userPoints,
-        int $newPoints,
-        string $operation
-    ): int {
-        switch ($operation) {
-            case RelativeScoreOperation::ADD_OPERATION:
-                return $userPoints + $newPoints;
-            case RelativeScoreOperation::SUBSTRACT_OPERATION:
-                return $userPoints - $newPoints;
-            default:
-                throw new InvalidArgumentException('Invalid operation type.');
-        }
-    }
+    abstract public function update(Score $score): void;
 }
