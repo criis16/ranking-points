@@ -45,9 +45,7 @@ class LocalRepository implements UserRepositoryInterface
     public function getUsers(): array
     {
         $session = $this->requestStack->getSession();
-        $users = $session->get('users') ?? [];
-
-        return $users;
+        return $session->get('users') ?? [];
     }
 
     public function getTopUsers(int $top): array
@@ -81,7 +79,7 @@ class LocalRepository implements UserRepositoryInterface
      */
     private function sortUsersByScore(array $users): array
     {
-        usort(
+        \usort(
             $users,
             function (User $firstUser, User $secondUser) {
                 $firstUserScore = $firstUser->getScore()->getPoints()->getValue();
