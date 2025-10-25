@@ -11,8 +11,8 @@ use App\Infrastructure\Shared\ValidateRequestQueryDataService;
 
 class GetRankedUsersController
 {
-    public const TOP_RANKING = 'top';
-    public const AT_RANKING = 'at';
+    private const TOP_RANKING = 'top';
+    private const AT_RANKING = 'at';
     private const REQUIRED_QUERY_FIELDS = ['type'];
     private const RANKING_TYPES = [
         self::AT_RANKING,
