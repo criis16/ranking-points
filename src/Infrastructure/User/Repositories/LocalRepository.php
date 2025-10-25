@@ -24,6 +24,7 @@ class LocalRepository implements UserRepositoryInterface
         $session = $this->requestStack->getSession();
         $users = $session->get('users') ?? [];
         $users[$userIdValue] = $user;
+        $users = $this->sortUsersByScore($users);
         $session->set('users', $users);
     }
 
@@ -46,10 +47,6 @@ class LocalRepository implements UserRepositoryInterface
         $session = $this->requestStack->getSession();
         $users = $session->get('users') ?? [];
 
-        if (!empty($users)) {
-            $users = $this->sortUsersByScore($users);
-        }
-
         return $users;
     }
 
@@ -58,10 +55,6 @@ class LocalRepository implements UserRepositoryInterface
         $session = $this->requestStack->getSession();
         $users = $session->get('users') ?? [];
 
-        if (!empty($users)) {
-            $users = $this->sortUsersByScore($users);
-        }
-
         return \array_slice($users, self::FIRST_OFFSET, $top);
     }
 
@@ -69,10 +62,6 @@ class LocalRepository implements UserRepositoryInterface
     {
         $session = $this->requestStack->getSession();
         $users = $session->get('users') ?? [];
-
-        if (!empty($users)) {
-            $users = $this->sortUsersByScore($users);
-        }
 
         if (!\array_key_exists($position, $users)) {
             return [];
