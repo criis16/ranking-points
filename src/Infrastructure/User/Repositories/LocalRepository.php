@@ -23,7 +23,19 @@ class LocalRepository implements UserRepositoryInterface
         $userIdValue = $user->getUserId()->getValue();
         $session = $this->requestStack->getSession();
         $users = $session->get('users') ?? [];
-        $users[$userIdValue] = $user;
+
+        $existingUserIndexes = \array_keys(
+            \array_filter($users, function (User $user) use ($userIdValue) {
+                return $user->getUserId()->getValue() === $userIdValue;
+            })
+        );
+
+        if (!empty($existingUserIndexes)) {
+            $users[$existingUserIndexes[0]] = $user;
+        } else {
+            $users[] = $user;
+        }
+
         $users = $this->sortUsersByScore($users);
         $session->set('users', $users);
     }
@@ -35,11 +47,11 @@ class LocalRepository implements UserRepositoryInterface
         $userIdValue = $userId->getValue();
         $users = $session->get('users') ?? [];
 
-        if (\array_key_exists($userIdValue, $users)) {
-            $result = [$users[$userIdValue]];
-        }
+        $result = \array_filter($users, function (User $user) use ($userIdValue) {
+            return $user->getUserId()->getValue() === $userIdValue;
+        });
 
-        return $result;
+        return \array_values($result);
     }
 
     public function getUsers(): array
