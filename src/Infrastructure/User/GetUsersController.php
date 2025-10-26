@@ -25,7 +25,7 @@ class GetUsersController
     {
         $response = [];
         $responseMessage = 'No users found';
-        $statusCode = 404;
+        $statusCode = JsonResponse::HTTP_NOT_FOUND;
 
         try {
             $response = $this->getUsersService->execute();
@@ -35,7 +35,7 @@ class GetUsersController
 
         if (!empty($response)) {
             $responseMessage = 'Users found successfully';
-            $statusCode = 200;
+            $statusCode = JsonResponse::HTTP_OK;
         }
 
         return new JsonResponse(
