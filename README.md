@@ -160,7 +160,6 @@ Relative score
 ```json
 {
   "status_code": 200,
-  "message": "The user's score with id {user_id} has been successfully saved",
-  "result": 1
+  "message": "The user's score with id {user_id} has been successfully saved"
 }
 ```
